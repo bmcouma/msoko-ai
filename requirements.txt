@@ -1,0 +1,8 @@
+Django>=5.2.4
+openai>=1.17.1
+python-dotenv>=1.0.1
+requests>=2.32.0
+tqdm>=4.67.1
+# Optional additions
+streamlit>=1.35.0
+africastalking>=0.6.0

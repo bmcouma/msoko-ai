@@ -1,0 +1,3 @@
+Act as a business mentor. The user owns a {user_business_type} and asked: "{user_question}" 
+
+Suggest clear growth strategies, partnerships, or diversification. Base your advice on common African SME patterns.
