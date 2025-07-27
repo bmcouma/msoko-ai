@@ -1,40 +1,34 @@
 import os
-import openai
+import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-def load_prompt(name):
-    """
-    Loads a text prompt from the prompts directory.
-    """
-    base_path = os.path.join(os.path.dirname(__file__), '..', 'prompts')
-    file_path = os.path.normpath(os.path.join(base_path, name))
-
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"Prompt file not found: {file_path}")
-
-    with open(file_path, 'r', encoding='utf-8') as file:
-        return file.read()
+api_key = os.getenv("OPENAI_API_KEY")
 
 def get_msoko_response(user_message):
     system_prompt = (
-        "You are Msoko AI, a smart business coach for informal sector entrepreneurs, like mama mbogas, boda riders, and small shop owners. "
+        "You are Msoko AI, a smart business coach for informal sector entrepreneurs like mama mbogas, boda riders, and small shop owners. "
         "Offer friendly, localized, and simplified advice. Focus on pricing tips, marketing ideas, customer care, record-keeping, expansion strategies, and savings."
     )
 
     try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "HTTP-Referer": "http://localhost:5500/",  # or your frontend domain
+            "X-Title": "Msoko AI Assistant"
+        }
+
+        body = {
+            "model": "openchat/openchat-3.5-0106",
+            "messages": [
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message},
-            ],
-            temperature=0.7,
-            max_tokens=600,
-        )
-        return response.choices[0].message.content.strip()
+                {"role": "user", "content": user_message}
+            ]
+        }
+
+        response = httpx.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=body)
+        response.raise_for_status()
+        return response.json()["choices"][0]["message"]["content"]
 
     except Exception as e:
         return f"An error occurred: {str(e)}"

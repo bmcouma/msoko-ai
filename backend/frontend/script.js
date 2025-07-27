@@ -19,20 +19,15 @@ form.addEventListener("submit", async (e) => {
     const response = await fetch("http://127.0.0.1:8000/api/chat/", {
       method: "POST",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
       },
-      body: `message=${encodeURIComponent(userText)}`
+      body: JSON.stringify({ message: userText }),
     });
 
-    const raw = await response.text();
-    console.log("Raw Response:", raw);
-    
-    const data = JSON.parse(raw);
-    console.log("Parsed Data:", data);
+    const data = await response.json();
+    console.log("Response:", data);
 
     const reply = data.response || data.reply || "Sorry, I didn’t catch that.";
-
-    // Remove "Typing..."
     chatbox.removeChild(chatbox.lastChild);
     appendMessage("ai", reply);
   } catch (err) {
