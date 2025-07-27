@@ -41,3 +41,195 @@ Most small-scale business owners in Africa lack access to business mentorship or
 Business Type: Mitumba seller in Mathare
 User Input: Ninaeza uza trousers kwa bei gani?
 → GPT Prompt returns: “Uza kwa KES 250–300 kulingana na ubora. Nunua kwa KES 150–200 kupata faida ya KES 80+ per trouser...”
+
+
+---
+
+```markdown
+# 🧠 Msoko AI – Your Smart Hustle Coach
+
+Msoko AI is an AI-powered business assistant designed to empower informal sector entrepreneurs, including mama mbogas, boda boda riders, small kiosk owners, and everyday hustlers. It delivers practical, friendly, and localized business advice using conversational AI, making technology accessible to grassroots businesses.
+
+---
+
+## ✨ Features
+
+- 🤖 AI chatbot trained with custom business prompts
+- 🌍 Localized language style for Kenyan micro-entrepreneurs
+- 💬 Real-time responses via Django backend + OpenRouter AI API
+- 🧾 Advice categories include pricing, saving, expansion, marketing & customer care
+- 📱 Simple responsive chat frontend built with HTML, CSS, JS
+
+---
+
+## 📂 Project Structure
+
+```
+
+msoko-ai/
+│
+├── backend/                  # Django backend
+│   ├── chatbot/              # App with views, utils, urls
+│   ├── msoko\_backend/        # Project-level settings and URLs
+│   ├── db.sqlite3            # Default DB (ignored by Git)
+│   └── manage.py
+│
+├── frontend/ (optional)      # Place static frontend here or host separately
+│
+├── .env                      # API keys (not tracked by Git)
+├── requirements.txt
+├── README.md
+└── .gitignore
+
+````
+
+---
+
+## ⚙️ Tech Stack
+
+- **Backend:** Python, Django, httpx
+- **Frontend:** HTML, CSS, JavaScript (Vanilla)
+- **AI Engine:** OpenRouter AI API (e.g. OpenChat 3.5)
+- **API Security:** dotenv `.env` file (environment variables)
+
+---
+
+## 🚀 Getting Started Locally
+
+1. **Clone this repo**
+   ```bash
+   git clone https://github.com/bmcouma/msoko-ai.git
+   cd msoko-ai
+````
+
+2. **Create & activate a virtual environment**
+
+   ```bash
+   python -m venv env
+   env\Scripts\activate  # On Windows
+   ```
+
+3. **Install dependencies**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Create your ****`.env`**** file**
+
+   ```
+   OPENAI_API_KEY=your_openrouter_api_key
+   ```
+
+5. **Run migrations and start server**
+
+   ```bash
+   cd backend
+   python manage.py migrate
+   python manage.py runserver
+   ```
+
+6. **Open frontend**
+
+   * Either serve static files in Django or
+   * Open `frontend/index.html` directly via VS Code Live Server or a browser
+
+---
+
+## 🌐 Deployment Recommendations
+
+* **Frontend:** Vercel, Netlify, or GitHub Pages
+* **Backend:** Render.com, Railway, or PythonAnywhere
+* **Environment config:** Add `.env` variables securely in deployment dashboard
+
+---
+
+## 🔐 .env File (Not committed to GitHub)
+
+This project uses an environment file to keep API keys secure.
+
+**Example ****`.env`****:**
+
+```
+OPENAI_API_KEY=sk-your-openrouter-key
+```
+
+---
+
+## 📦 requirements.txt (Sample)
+
+Generated using:
+
+```bash
+pip freeze > requirements.txt
+```
+
+Example content:
+
+```
+Django==5.2.4
+httpx
+python-dotenv
+```
+
+---
+
+## 🤝 Contribution Guide
+
+1. Fork this repo
+2. Create your branch (`git checkout -b feature-name`)
+3. Commit changes (`git commit -am 'Add something'`)
+4. Push to your branch (`git push origin feature-name`)
+5. Open a Pull Request
+
+---
+
+## 🧠 Prompt Design
+
+The chatbot uses a custom system prompt to give localized business coaching. It's designed to:
+
+* Speak in simple terms
+* Avoid technical jargon
+* Guide hustlers with real, actionable steps
+
+---
+
+## 📸 Screenshots (Optional)
+
+Add screenshots of:
+
+* Chatbot interface
+* Sample responses
+* Mobile view
+
+---
+
+## 🙋‍♂️ Maintainer
+
+**Bravin Ouma**
+Digital Innovator | Web Dev | Hustler Tech Evangelist
+GitHub: [@bmcouma](https://github.com/bmcouma)
+X (Twitter): [@bmc\_ouma](https://x.com/bmc_ouma)
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 🏁 What's Next
+
+*
+
+---
+
+*Msoko AI – built by hustlers, for hustlers.* 🚀
+
+```
+
+---
+
+Let me know if you want a badge version (build passing, stars, etc.), or a version in Swahili, or markdown sections split for GitHub Pages. Ready to help next with deployment or GitHub actions if you need.
+```
