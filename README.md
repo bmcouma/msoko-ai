@@ -62,27 +62,6 @@ Msoko AI is an AI-powered business assistant designed to empower informal sector
 
 ---
 
-## 📂 Project Structure
-
-```
-
-msoko-ai/
-│
-├── backend/                  # Django backend
-│   ├── chatbot/              # App with views, utils, urls
-│   ├── msoko\_backend/        # Project-level settings and URLs
-│   ├── db.sqlite3            # Default DB (ignored by Git)
-│   └── manage.py
-│
-├── frontend/ (optional)      # Place static frontend here or host separately
-│
-├── .env                      # API keys (not tracked by Git)
-├── requirements.txt
-├── README.md
-└── .gitignore
-
-````
-
 ---
 
 ## ⚙️ Tech Stack
@@ -231,5 +210,3 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-Let me know if you want a badge version (build passing, stars, etc.), or a version in Swahili, or markdown sections split for GitHub Pages. Ready to help next with deployment or GitHub actions if you need.
-```
