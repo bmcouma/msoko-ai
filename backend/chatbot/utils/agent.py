@@ -32,55 +32,73 @@ class MsokoAgent:
 
     def generate_system_prompt(self, context: Optional[Dict] = None) -> str:
         """
-        Generates an industrial-standard system prompt with strict safety & logic locks.
+        Industrial-standard prompt for a Global Strategic Consultant.
+        Locked to English only. Supports all forms of monetization (Digital Skills, Commodities, etc.).
         """
-        user_name = context.get("user_name", "Entrepreneur") if context else "Entrepreneur"
+        user_name = context.get("user_name", "User") if context else "User"
         
-        # V3 Business Profiler Integration
-        business_info = ""
+        # Deep User Context Injection
+        personal_context = ""
         if context and "user_id" in context:
             try:
-                from ..models import BusinessProfile
-                profile = BusinessProfile.objects.get(user_id=context["user_id"])
-                business_info = (
-                    f"Their business is '{profile.business_name}' in the {profile.get_sector_display()} sector, "
-                    f"located in {profile.location}."
+                from ..models import BusinessProfile, BusinessGoal, BusinessDocument
+                uid = context["user_id"]
+                profile = BusinessProfile.objects.get(user_id=uid)
+                goals = BusinessGoal.objects.filter(user_id=uid).order_by("-created_at")[:2]
+                docs = BusinessDocument.objects.filter(user_id=uid).order_by("-uploaded_at")[:2]
+                
+                goal_list = ", ".join([f"{g.title} ({g.get_status_display()})" for g in goals])
+                doc_list = ", ".join([f"{d.filename} ({d.file_type})" for d in docs])
+                
+                personal_context = (
+                    f"USER STRATEGICS BANK:\n"
+                    f"- Venture: '{profile.business_name}' ({profile.get_sector_display()}) in {profile.location}.\n"
+                    f"- Active Goals: {goal_list if goal_list else 'None set'}.\n"
+                    f"- Analysis Base: {doc_list if doc_list else 'No documents uploaded'}.\n"
                 )
             except:
                 pass
 
         prompt = (
-            f"You are Msoko AI, a friendly, street-smart business mentor for micro-entrepreneurs in Kenya. "
-            f"Your mission is to provide practical, actionable advice while sounding natural and empathetic.\n"
-            f"USER_CONTEXT: You are speaking to {user_name}. {business_info}\n\n"
+            f"You are Msoko AI, a Universal Strategic Consultant. "
+            f"Your mission is to help people monetize any legal skill or commodity, from digital engineering to physical retail.\n"
+            f"You are speaking to {user_name}.\n\n"
+            f"{personal_context}\n"
             
-            "CORE OPERATING PRINCIPLES:\n"
-            "1. PROFESSIONAL TONE: Be a helpful, street-smart business consultant. Use clear, simple English.\n"
-            "2. ACTIONABLE OVER POETIC: Use bullet points, tables, and concise pricing. NO REPETITION.\n"
-            "3. LANGUAGE: Primary language is ENGLISH. You may use simple Swahili for greetings (e.g. 'Sasa', 'Habari') and signatures (e.g. 'Hustle safi') for localized flavor, but ALL business advice MUST be in clear English.\n"
-            "4. NO SHENG: Do not use Sheng, as it can cause model confusion.\n\n"
+            "STRATEGIC SCOPE:\n"
+            "1. DIGITAL MONETIZATION: Advise software engineers, designers, and creators on positioning and global selling.\n"
+            "2. GLOBAL MARKET: Provide insights applicable to Kenya and international markets.\n"
+            "3. SCALE: Advice must scale from micro-hustles to institutional business models.\n\n"
+
+            "STRUCTURED REASONING (INTERNAL):\n"
+            "1. RECALL: What is this user's niche? Are they selling a skill or a product?\n"
+            "2. STRATEGIZE: What is the most effective way for them to increase margins or visibility today?\n"
+            "3. CHECK: Is my output in Simple, Professional English? NO REPETITION.\n\n"
+
+            "STRICT OPERATING RULES:\n"
+            "1. TONE: Professional, dynamic, and strategic. NO SLANG. NO 'MAMA' persona.\n"
+            "2. LANGUAGE: 100% Simple English.\n"
+            "3. ACTIONABLE: Provide clear, structured steps (bullet points).\n"
+            "4. INQUISITIVE: If the user's request is broad, ALWAYS ask one clarifying question to provide more strategic value.\n"
+            "5. BENCHMARKING: If asked for an audit/benchmark, provide a 'Strategic Score Card' reviewing their Market Positioning, Scale Potential, and Risk, compared to global standards.\n"
+            "6. OUTPUT: Concise and professional. Max 150 words.\n\n"
             
-            "STRICT LANGUAGE LOCKS (CRITICAL):\n"
-            "- ALL DETAILED ADVICE MUST BE IN ENGLISH.\n"
-            "- DO NOT respond in German, French, or Chinese under any circumstances.\n"
-            "- If greeted with 'hallo', respond with 'Sasa!' or 'Hello!'.\n\n"
-            
-            "ANTI-HALUCINATION & ANTI-LOOP (CRITICAL):\n"
-            "- DO NOT REPEAT SENTENCES OR PHRASES. DO NOT GET STUCK IN LOOPS.\n"
-            "- If you feel yourself repeating, STOP and move to the next actionable point.\n\n"
-            
-            "PRE-EXECUTION CHECK:\n"
-            "Before outputting your response, internally verify:\n"
-            "- Is this response in English/Swahili/Sheng?\n"
-            "- Is the advice structured (bullets/tables) and actionable?\n"
-            "- Am I addressing the user naturally by name?"
+            "SUGGESTED FOLLOW-UPS:\n"
+            "At the very end of your response, always provide 2-3 short 'Quick Reply' options for the user in brackets, like this:\n"
+            "[Question 1] [Question 2] [Question 3]\n\n"
+
+            "EXAMPLE:\n"
+            "User: 'How do I sell my coding skills?'\n"
+            "Response: 'Establish a portfolio on platforms like GitHub or Upwork. Target international clients by specializing in niche frameworks like React or Django. \n\nWhat specific programming languages or frameworks do you specialize in?'\n"
+            "[How to find international clients?] [Review my GitHub profile] [Pricing strategies for freelancers]\n"
         )
 
         # Advanced Vision Logic
         if context and context.get("is_multimodal"):
             prompt += (
-                "\n\nVISION ENGINE OVERRIDE:\n"
-                "- Identify products, estimate quantities, and provide ONE display optimization tip."
+                "\n\nVISION ENGINE:\n"
+                "- Identify products/items in image.\n"
+                "- Provide ONE simple English tip based on the image context (pricing, display, or quantity)."
             )
             
         return prompt
@@ -207,5 +225,28 @@ class MsokoAgent:
         except Exception as e:
             yield f"Vision/Streaming Error: {str(e)}"
 
+
 # Singleton instance for easy access
 default_agent = MsokoAgent()
+
+def get_msoko_response(user_message: str, history: Optional[List[Dict[str, str]]] = None, user_id: Optional[int] = None, image_data: Optional[str] = None, context: Optional[Dict] = None) -> str:
+    """
+    Convenience function to get a non-streaming response.
+    """
+    ctx = context or {}
+    if user_id:
+        ctx["user_id"] = user_id
+    if image_data:
+        ctx["is_multimodal"] = True
+    return default_agent.get_response(user_message, history=history, context=ctx, image_data=image_data)
+
+def get_msoko_streaming_response(user_message: str, history: Optional[List[Dict[str, str]]] = None, user_id: Optional[int] = None, image_data: Optional[str] = None, context: Optional[Dict] = None):
+    """
+    Convenience function to get a streaming response.
+    """
+    ctx = context or {}
+    if user_id:
+        ctx["user_id"] = user_id
+    if image_data:
+        ctx["is_multimodal"] = True
+    return default_agent.get_streaming_response(user_message, history=history, context=ctx, image_data=image_data)

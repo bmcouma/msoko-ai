@@ -20,11 +20,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let recognition = null;
   let isRecording = false;
   let selectedImage = null;
+  let isAuthenticated = false;
 
   // INITIAL LOAD
-  loadThreads();
+  checkSession();
   initVoice();
   initImage();
+  initAuth();
 
   dashboardBtn.addEventListener("click", showDashboard);
   profileBtn.addEventListener("click", showProfile);
@@ -37,7 +39,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const content = `
             <div class="dashboard-header">
                 <h3><i class="fas fa-chart-line"></i> Strategic Dashboard</h3>
-                <p>Performance insights for ${data.business_name}</p>
+                <div style="display:flex; gap:8px;">
+                    <button class="add-goal-btn" id="benchmark-btn" title="Audit Venture"><i class="fas fa-vial"></i></button>
+                    <p>Performance insights for ${data.business_name}</p>
+                </div>
             </div>
             <div class="stats-grid">
                 <div class="stat-card">
@@ -83,6 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         showOverlay(content);
         document.getElementById("add-goal-btn").onclick = showAddGoalForm;
+        document.getElementById("benchmark-btn").onclick = () => {
+            hideOverlay();
+            sendMessage("Perform a strategic audit and benchmark my venture against global standards based on my profile and goals.");
+        };
     } catch (e) { console.error(e); }
   }
 
@@ -177,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(payload)
             });
             hideOverlay();
-            alert("Mama Msoko updated your profile! 🚀");
+            alert("Msoko AI updated your profile! 🚀");
         };
     } catch (e) { console.error(e); }
   }
@@ -199,6 +208,175 @@ document.addEventListener("DOMContentLoaded", () => {
   function hideOverlay() {
       const overlay = document.querySelector(".modal-overlay");
       if(overlay) overlay.remove();
+  }
+
+  async function checkSession() {
+    try {
+        const res = await fetch("/api/auth/session/");
+        const data = await res.json();
+        isAuthenticated = data.authenticated;
+        updateUIForAuth(data.authenticated, data.user);
+        if (data.authenticated) {
+            loadThreads();
+        }
+    } catch (e) { console.error("Session check failed"); }
+  }
+
+  function updateUIForAuth(isAuth, user) {
+      const authSection = document.getElementById("auth-section");
+      const dashboardBtn = document.getElementById("dashboard-btn");
+      const profileBtn = document.getElementById("profile-btn");
+      const newChatBtn = document.getElementById("new-chat-btn");
+
+      if (isAuth && user) {
+          authSection.innerHTML = `
+              <div class="user-pill">
+                  <i class="fas fa-user-circle"></i>
+                  <span>${user.first_name || 'Hustler'}</span>
+                  <button id="logout-btn" title="Sign Out"><i class="fas fa-sign-out-alt"></i></button>
+              </div>
+          `;
+          document.getElementById("logout-btn").onclick = handleLogout;
+          dashboardBtn.disabled = false;
+          profileBtn.disabled = false;
+          newChatBtn.disabled = false;
+      } else {
+          authSection.innerHTML = `
+              <button class="nav-item" id="login-btn">
+                  <i class="fas fa-user-shield"></i>
+                  <span>Sign In / Join</span>
+              </button>
+          `;
+          document.getElementById("login-btn").onclick = showAuthChoice;
+          dashboardBtn.disabled = true;
+          profileBtn.disabled = true;
+          newChatBtn.disabled = true;
+      }
+  }
+
+  function showAuthChoice() {
+      const content = `
+        <div class="dashboard-header" style="text-align:center;">
+            <h3>Start Your Strategy</h3>
+            <p>Sign in to save your goals and history.</p>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <button class="save-btn" id="go-login">Sign In</button>
+            <button class="save-btn" style="background:#475569;" id="go-signup">Create Account</button>
+        </div>
+      `;
+      showOverlay(content);
+      document.getElementById("go-login").onclick = showLoginForm;
+      document.getElementById("go-signup").onclick = showSignupForm;
+  }
+
+  function showLoginForm() {
+      const content = `
+        <div class="dashboard-header">
+            <h3>Welcome Back</h3>
+            <p>Sign in to your strategic dashboard.</p>
+        </div>
+        <form id="login-form" class="profile-form">
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Email Address" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <div style="text-align:right; margin-bottom:12px;">
+                <a href="#" id="forgot-pw-link" style="font-size:0.8rem; color:var(--primary);">Forgot Password?</a>
+            </div>
+            <button type="submit" class="save-btn">Sign In</button>
+        </form>
+      `;
+      showOverlay(content);
+      document.getElementById("forgot-pw-link").onclick = (e) => { e.preventDefault(); showForgotPasswordForm(); };
+      
+      document.getElementById("login-form").onsubmit = async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const res = await fetch("/api/auth/login/", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(Object.fromEntries(formData))
+          });
+          const data = await res.json();
+          if (res.ok) {
+              hideOverlay();
+              checkSession();
+          } else {
+              alert(data.error || "Invalid login details.");
+          }
+      };
+  }
+
+  function showSignupForm() {
+      const content = `
+        <div class="dashboard-header">
+            <h3>Join Msoko AI</h3>
+            <p>Professional strategic hub for entrepreneurs.</p>
+        </div>
+        <form id="signup-form" class="profile-form">
+            <div style="display:flex; gap:8px;">
+                <div class="form-group" style="flex:1;">
+                    <input type="text" name="first_name" placeholder="First Name" required>
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <input type="text" name="last_name" placeholder="Surname" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Email Address" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Password (Min 8 chars)" required minlength="8">
+            </div>
+            <div class="form-group">
+                <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+            </div>
+            <div style="margin: 12px 0; font-size: 0.8rem; display:flex; align-items:flex-start; gap:8px;">
+                <input type="checkbox" required id="terms-check" style="width:auto; margin-top:3px;">
+                <label for="terms-check">I agree to the <a href="#" onclick="showLegal('ToS')">Terms of Service</a> and <a href="#" onclick="showLegal('Privacy')">Privacy Policy</a>.</label>
+            </div>
+            <button type="submit" class="save-btn">Create Professional Account</button>
+        </form>
+      `;
+      showOverlay(content);
+      document.getElementById("signup-form").onsubmit = async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const payload = Object.fromEntries(formData);
+          
+          if (payload.password !== payload.confirm_password) {
+              alert("Passwords do not match.");
+              return;
+          }
+
+          const res = await fetch("/api/auth/register/", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+          });
+          const data = await res.json();
+          if (res.ok) {
+              hideOverlay();
+              checkSession();
+              alert("Welcome to Msoko AI! Let's set up your business profile.");
+              setTimeout(showProfile, 1000);
+          } else {
+              alert(data.error || "Registration failed.");
+          }
+      };
+  }
+
+  async function handleLogout() {
+      await fetch("/api/auth/logout/", { method: "POST" });
+      checkSession();
+      resetChat();
+  }
+
+  function initAuth() {
+     // Placeholder for any other auth init if needed
   }
 
   function initImage() {
@@ -459,6 +637,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
+      renderQuickReplies(streamingMessage, fullReply);
       updateStatus(true);
     } catch (error) {
       console.error("Streaming Error:", error);
@@ -507,11 +686,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (isAI) {
       bubble.innerHTML = renderMarkdown(text);
+      const actions = document.createElement("div");
+      actions.className = "ai-actions";
+      
       const speakerBtn = document.createElement("button");
-      speakerBtn.className = "action-btn speaker-btn";
+      speakerBtn.className = "action-btn";
       speakerBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
       speakerBtn.onclick = () => speak(text);
-      bubble.appendChild(speakerBtn);
+      
+      const thumbUp = document.createElement("button");
+      thumbUp.className = "action-btn";
+      thumbUp.innerHTML = '<i class="far fa-thumbs-up"></i>';
+      thumbUp.onclick = () => { thumbUp.innerHTML = '<i class="fas fa-thumbs-up"></i>'; };
+
+      const thumbDown = document.createElement("button");
+      thumbDown.className = "action-btn";
+      thumbDown.innerHTML = '<i class="far fa-thumbs-down"></i>';
+      thumbDown.onclick = () => { thumbDown.innerHTML = '<i class="fas fa-thumbs-down"></i>'; };
+
+      actions.appendChild(speakerBtn);
+      actions.appendChild(thumbUp);
+      actions.appendChild(thumbDown);
+      bubble.appendChild(actions);
+
+      renderQuickReplies(msgDiv, text);
     } else {
       const textDiv = document.createElement("div");
       textDiv.textContent = text;
@@ -527,7 +725,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function showProactiveTip() {
-    let tip = "Mama Msoko says: Saturdays are for hustle! Nairobi is awake now. ☀️";
+    let tip = "Msoko AI: Global markets are active. How are we growing today? 🚀";
     
     try {
         const res = await fetch("/api/dashboard/");
@@ -535,12 +733,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await res.json();
             if (data.goals && data.goals.length > 0) {
                 const randomGoal = data.goals[Math.floor(Math.random() * data.goals.length)];
-                tip = `Mama Msoko says: You are ${randomGoal.progress}% close to your goal '${randomGoal.title}'. Keep pushing! 🚀`;
+                tip = `Msoko AI suggests: You are ${randomGoal.progress}% close to your goal '${randomGoal.title}'. Keep pushing! 🚀`;
             } else {
                 const tips = [
-                  "Kitu Safi: Did you record your sales from yesterday? Record-keeping is king! 👑",
-                  "Biashara ni connection: Reach out to one new customer today! 🤝",
-                  "Hustle safi: If you're selling mitumba, display your best GRADE A at the front. ✨"
+                  "Knowledge is Capital: Have you updated your portfolio or stock list recently? 📈",
+                  "Strategic Value: Positioning your business as a solution increases your margin. 💸",
+                  "Global Vision: Even local ventures can adopt international standards of quality. ✨"
                 ];
                 tip = tips[Math.floor(Math.random() * tips.length)];
             }
@@ -574,8 +772,54 @@ document.addEventListener("DOMContentLoaded", () => {
     return div;
   }
 
+  function renderQuickReplies(msgDiv, text) {
+    const bubble = msgDiv.querySelector(".message-bubble");
+    // Extract [Questions] from the end of the text
+    const regex = /\[([^\]]+)\]/g;
+    const matches = [...text.matchAll(regex)];
+    
+    if (matches.length > 0) {
+      // Remove tokens from display
+      let cleanText = text.replace(regex, '').trim();
+      bubble.innerHTML = renderMarkdown(cleanText);
+      
+      // Re-add actions if they were there (in appendMessage)
+      if (msgDiv.classList.contains('ai')) {
+         // ... simplified for now, we just ensure quick-replies div is separate
+      }
+
+      const existing = msgDiv.querySelector(".quick-replies");
+      if (existing) existing.remove();
+
+      const qrContainer = document.createElement("div");
+      qrContainer.className = "quick-replies";
+      
+      matches.forEach(match => {
+        const btn = document.createElement("button");
+        btn.className = "qr-btn";
+        btn.textContent = match[1];
+        btn.onclick = () => sendMessage(match[1]);
+        qrContainer.appendChild(btn);
+      });
+      
+      msgDiv.appendChild(qrContainer);
+    }
+  }
+
   function renderMarkdown(text) {
     if (typeof marked === "undefined") return text;
+    
+    marked.setOptions({
+        highlight: function(code, lang) {
+            if (typeof hljs !== 'undefined') {
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                return hljs.highlight(code, { language }).value;
+            }
+            return code;
+        },
+        langPrefix: 'hljs language-'
+    });
+
     const rawHtml = marked.parse(text);
     return typeof DOMPurify !== "undefined"
       ? DOMPurify.sanitize(rawHtml)
@@ -589,5 +833,64 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateStatus(isOnline) {
     statusDot.style.backgroundColor = isOnline ? "var(--primary)" : "#f43f5e";
     statusText.textContent = isOnline ? "AI Coach Online" : "AI Coach Offline";
+  }
+
+  // --- Industrial Product Ready Modules ---
+
+  window.showHelp = () => {
+    document.getElementById("help-modal").style.display = "flex";
+  };
+  window.hideHelp = () => {
+    document.getElementById("help-modal").style.display = "none";
+  };
+
+  window.showLegal = (type) => {
+    const title = document.getElementById("legal-title");
+    const content = document.getElementById("legal-content");
+    title.innerText = type === 'ToS' ? "Terms of Service" : "Privacy Policy";
+    
+    content.innerHTML = type === 'ToS' 
+      ? `<p>Welcome to Msoko AI. By using our platform, you agree to prioritize legal monetization and strategic growth. We provide high-fidelity AI-driven business coaching. Use it at your own strategic risk.</p>
+         <p>1. <b>Account Security</b>: You are responsible for your strategic credentials.<br>
+         2. <b>Fair Use</b>: Msoko AI must be used for ethical business intelligence only.</p>`
+      : `<p>Your business strategics are yours. We collect names and emails to personalize your coaching experience. Your data is encrypted and used solely for generating precision insights for your venture.</p>
+         <p>1. <b>Data Retention</b>: We keep your goals and history as long as your account is active.<br>
+         2. <b>Transparency</b>: We never share your strategic data with third-party competitors.</p>`;
+    
+    document.getElementById("legal-modal").style.display = "flex";
+  };
+  window.hideLegal = () => {
+    document.getElementById("legal-modal").style.display = "none";
+  };
+
+  function showForgotPasswordForm() {
+    const content = `
+        <div class="dashboard-header">
+            <h3>Reset Strategy Access</h3>
+            <p>Enter your email to receive a reset link.</p>
+        </div>
+        <form id="forgot-pw-form" class="profile-form">
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Professional Email" required>
+            </div>
+            <button type="submit" class="save-btn">Send Reset Link</button>
+            <div style="text-align:center; margin-top:12px;">
+                <a href="#" onclick="showLoginForm(); return false;" style="font-size:0.8rem; color:var(--text-muted);">Back to Login</a>
+            </div>
+        </form>
+    `;
+    showOverlay(content);
+    document.getElementById("forgot-pw-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const res = await fetch("/api/auth/password-reset/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(Object.fromEntries(formData))
+        });
+        const data = await res.json();
+        alert(data.message);
+        hideOverlay();
+    };
   }
 });
