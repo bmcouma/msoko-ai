@@ -69,8 +69,12 @@
             </button>
         </div>
 
-        <div style="margin-top: auto; padding: 12px 8px; font-size: 0.8rem; opacity: 0.6;">
-            Built for entrepreneurs by entrepreneurs 🚀
+        <div class="sidebar-footer">
+            <div class="attribution">Msoko AI © 2026</div>
+            <div class="built-by">Built by <span class="brand">Teklini Technologies</span></div>
+            <a href="https://wa.me/254XXXXXXXXX" target="_blank" class="support-link">
+                <i class="fab fa-whatsapp"></i> Msoko AI Support
+            </a>
         </div>
     </aside>
 
@@ -81,6 +85,9 @@
                 <span id="status-text">AI Coach Online</span>
             </div>
             <div class="header-actions">
+                <button id="theme-toggle-btn" title="Switch Theme" style="background:none; border:none; cursor:pointer; color: var(--text-muted); margin-right: 12px;">
+                    <i class="fas fa-moon"></i>
+                </button>
                 <button id="copy-chat-btn" title="Copy Chat" style="background:none; border:none; cursor:pointer; color: var(--text-muted);">
                     <i class="far fa-copy"></i>
                 </button>
@@ -90,20 +97,26 @@
         <div class="chat-area" id="chat-area">
             <!-- Welcome Screen or Messages -->
             <div class="welcome-screen" id="welcome-screen">
-                <h1 class="landing-title">What are you working on?</h1>
-                <div class="suggestion-pills" id="suggestion-grid">
-                    <button class="pill-btn" data-prompt="Position my software engineering skills for global clients">
-                        <i class="fas fa-code"></i> Create Strategy
-                    </button>
-                    <button class="pill-btn" data-prompt="Optimize my retail profit margins in local markets">
-                        <i class="fas fa-chart-pie"></i> Learn Market
-                    </button>
-                    <button class="pill-btn" data-prompt="Scalable marketing plan for service-based ventures">
-                        <i class="fas fa-pen-nib"></i> Write Proposal
-                    </button>
-                    <button class="pill-btn" data-prompt="Risk analysis for global commodity trade">
-                        <i class="fas fa-rocket"></i> How to Scale
-                    </button>
+                <h2>I'm Msoko AI.</h2>
+                <p>Universal Strategic Consultant for monetization, skills, and commodities. How can I help you scale today?</p>
+                
+                <div class="suggestion-grid" id="suggestion-grid">
+                    <div class="suggestion-card" data-prompt="Position my software engineering skills for global clients">
+                        <h4>Digital Strategy</h4>
+                        <p>Monetize your code, design, or specialized skills.</p>
+                    </div>
+                    <div class="suggestion-card" data-prompt="Optimize my retail profit margins in local markets">
+                        <h4>Market Logistics</h4>
+                        <p>Efficiency tips for kiosks, stalls, and wholesalers.</p>
+                    </div>
+                    <div class="suggestion-card" data-prompt="Scalable marketing plan for service-based ventures">
+                        <h4>Strategic Growth</h4>
+                        <p>Scale your reaches beyond localized markets.</p>
+                    </div>
+                    <div class="suggestion-card" data-prompt="Risk analysis for global commodity trade">
+                        <h4>Global Trade</h4>
+                        <p>Handle cross-border commerce and trade risks.</p>
+                    </div>
                 </div>
             </div>
 
@@ -117,14 +130,16 @@
                 <textarea id="user-input" placeholder="Ask Msoko AI about your business... (Shift+Enter for new line)" rows="1"></textarea>
                 <div class="input-footer">
                     <div class="input-actions">
-                        <input type="file" id="image-input" accept="image/*" style="display: none;">
-                        <button class="action-btn" id="attach-btn" title="Attach Image">
-                            <i class="fas fa-image"></i>
+                        <input type="file" id="universal-file-input" multiple style="display: none;">
+                        <button class="action-btn" id="plus-attach-btn" title="Attach Files (Docs, PDFs, Images)">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="action-btn" id="search-toggle-btn" title="Enable Web Search">
+                            <i class="fas fa-globe"></i>
                         </button>
                         <button class="action-btn" id="voice-btn" title="Voice Input">
                             <i class="fas fa-microphone"></i>
                         </button>
-                        <div class="input-tips">Localized coaching in English, Swahili, and Sheng.</div>
                     </div>
                     <button class="send-btn" id="send-btn" disabled>
                         <i class="fas fa-paper-plane"></i> Send

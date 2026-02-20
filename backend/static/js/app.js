@@ -1,6 +1,46 @@
 /**
  * Msoko AI - Professional Modern Frontend Logic
+ * Msoko AI - Professional Modern Frontend Logic
  */
+
+function initTheme() {
+    const savedTheme = localStorage.getItem("msoko-theme") || "system";
+    applyTheme(savedTheme);
+    
+    // Listen for system theme changes
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+        if (localStorage.getItem("msoko-theme") === "system") {
+            applyTheme("system");
+        }
+    });
+}
+
+function applyTheme(theme) {
+    const html = document.documentElement;
+    let actualTheme = theme;
+    
+    if (theme === "system") {
+        actualTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    
+    html.setAttribute("data-theme", actualTheme);
+    updateThemeIcon(actualTheme);
+}
+
+function updateThemeIcon(theme) {
+    const icon = document.querySelector("#theme-toggle-btn i");
+    if (icon) {
+        icon.className = theme === "dark" ? "fas fa-sun" : "fas fa-moon";
+    }
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    
+    localStorage.setItem("msoko-theme", newTheme);
+    applyTheme(newTheme);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   const userInput = document.getElementById("user-input");
@@ -8,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatArea = document.getElementById("chat-area");
   const messageList = document.getElementById("message-list");
   const welcomeScreen = document.getElementById("welcome-screen");
-  const suggestionCards = document.querySelectorAll(".suggestion-card");
+  const suggestionCards = document.querySelectorAll(".pill-btn");
   const newChatBtn = document.getElementById("new-chat-btn");
   const dashboardBtn = document.getElementById("dashboard-btn");
   const profileBtn = document.getElementById("profile-btn");
@@ -23,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let isAuthenticated = false;
 
   // INITIAL LOAD
+  initTheme();
   checkSession();
   initVoice();
   initImage();
@@ -30,6 +71,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   dashboardBtn.addEventListener("click", showDashboard);
   profileBtn.addEventListener("click", showProfile);
+  document.getElementById("theme-toggle-btn").addEventListener("click", toggleTheme);
+  
+  // Advanced Features Init
+  initAttachments();
+  initSearchToggle();
 
   async function showDashboard() {
     try {
@@ -80,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
             <div class="insights-list" style="margin-top: 20px;">
-                <h4>Mama Msoko's Insights</h4>
+                <h4>Msoko AI Insights</h4>
                 <ul class="insight-ul">
                     ${data.recent_insights.map(i => `<li><i class="fas fa-magic"></i> ${i}</li>`).join('')}
                 </ul>
@@ -379,22 +425,80 @@ document.addEventListener("DOMContentLoaded", () => {
      // Placeholder for any other auth init if needed
   }
 
-  function initImage() {
-    const attachBtn = document.getElementById("attach-btn");
-    const imageInput = document.getElementById("image-input");
+  function initAttachments() {
+    const attachBtn = document.getElementById("plus-attach-btn");
+    const fileInput = document.getElementById("universal-file-input");
 
-    attachBtn.addEventListener("click", () => imageInput.click());
+    if (!attachBtn || !fileInput) return;
 
-    imageInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (file) {
+    attachBtn.addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener("change", (e) => {
+      const files = Array.from(e.target.files);
+      files.forEach(file => {
         const reader = new FileReader();
         reader.onload = (ev) => {
-          selectedImage = ev.target.result;
-          showImagePreview(selectedImage);
+          const fileData = {
+            name: file.name,
+            type: file.type,
+            data: ev.target.result,
+            isImage: file.type.startsWith("image/")
+          };
+          addAttachmentPreview(fileData);
         };
-        reader.readAsDataURL(file);
-      }
+        if (file.type.startsWith("image/")) {
+            reader.readAsDataURL(file);
+        } else {
+            // For docs/pdfs, we just store the name and a placeholder for now
+            // In a real scenario, we'd upload this to get a link or process content
+            reader.readAsText(file.slice(0, 1024)); // Just a peek
+        }
+      });
+    });
+  }
+
+  function addAttachmentPreview(file) {
+    let previewBar = document.querySelector(".attachment-preview-bar");
+    if (!previewBar) {
+      previewBar = document.createElement("div");
+      previewBar.className = "attachment-preview-bar";
+      document.querySelector(".input-box").prepend(previewBar);
+    }
+
+    const previewItem = document.createElement("div");
+    previewItem.className = "preview-item";
+    
+    if (file.isImage) {
+        previewItem.innerHTML = `<img src="${file.data}" alt="${file.name}">`;
+    } else {
+        const iconClass = file.type.includes("pdf") ? "fa-file-pdf" : "fa-file-alt";
+        previewItem.innerHTML = `
+            <div class="file-icon-preview">
+                <i class="fas ${iconClass}"></i>
+                <span>${file.name.split('.').pop().toUpperCase()}</span>
+            </div>
+        `;
+    }
+
+    const removeBtn = document.createElement("button");
+    removeBtn.innerHTML = "&times;";
+    removeBtn.onclick = () => previewItem.remove();
+    previewItem.appendChild(removeBtn);
+    
+    previewBar.appendChild(previewItem);
+  }
+
+  let isSearchEnabled = false;
+  function initSearchToggle() {
+    const searchBtn = document.getElementById("search-toggle-btn");
+    if (!searchBtn) return;
+
+    searchBtn.addEventListener("click", () => {
+        isSearchEnabled = !isSearchEnabled;
+        searchBtn.classList.toggle("active", isSearchEnabled);
+        if (isSearchEnabled) {
+            console.log("Web Research Mode Active");
+        }
     });
   }
 
@@ -501,6 +605,15 @@ document.addEventListener("DOMContentLoaded", () => {
     resetChat();
   });
 
+  // Suggestion Pills
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".pill-btn");
+    if (btn) {
+      const prompt = btn.getAttribute("data-prompt");
+      sendMessage(prompt);
+    }
+  });
+
   function resetChat() {
     currentThreadId = null;
     history = [];
@@ -541,10 +654,22 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderThreadList(threads) {
     const list = document.getElementById("history-list");
     list.innerHTML = "";
+    
+    if (threads.length > 0) {
+      const sectionHeader = document.createElement("div");
+      sectionHeader.className = "history-title";
+      sectionHeader.style.marginTop = "8px";
+      sectionHeader.innerHTML = '<i class="fas fa-clock"></i> Recent';
+      list.appendChild(sectionHeader);
+    }
+
     threads.forEach(t => {
       const item = document.createElement("div");
       item.className = `history-item ${t.id === currentThreadId ? 'active' : ''}`;
-      item.textContent = t.title || "New Consultation";
+      item.innerHTML = `
+        <i class="far fa-comment-alt"></i>
+        <span>${t.title || "New Consultation"}</span>
+      `;
       item.onclick = () => switchThread(t.id);
       list.appendChild(item);
     });
@@ -590,7 +715,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const payload = { 
       message: text, 
       thread_id: currentThreadId,
-      image: selectedImage // Sending as base64
+      image: selectedImage, // Sending as base64
+      search_enabled: isSearchEnabled
     };
 
     if (selectedImage) removeImage();
