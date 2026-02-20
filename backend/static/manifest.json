@@ -8,7 +8,7 @@
   "theme_color": "#10b981",
   "icons": [
     {
-      "src": "https://img.icons8.com/parakeet/512/FFFFFF/shop.png",
+      "src": "/static/images/logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
