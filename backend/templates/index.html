@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Msoko AI | Smart Business Coach</title>
+    <link rel="stylesheet" href="/static/css/global.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="/static/manifest.json">
+</head>
+<body>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/js/sw.js');
+            });
+        }
+    </script>
+    <aside class="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+                    <path d="M3 6h18"></path>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    <circle cx="12" cy="12" r="3" fill="var(--primary)" opacity="0.3"></circle>
+                </svg>
+            </div>
+            <div class="logo-text">Msoko AI</div>
+        </div>
+        
+        <button class="new-chat-btn" id="new-chat-btn">
+            <i class="fas fa-plus"></i>
+            <span>New Consultation</span>
+        </button>
+
+        <div class="nav-section">
+            <button class="nav-item" id="dashboard-btn">
+                <i class="fas fa-chart-line"></i>
+                <span>Executive Dashboard</span>
+            </button>
+            <button class="nav-item" id="profile-btn">
+                <i class="fas fa-store"></i>
+                <span>Business Profile</span>
+            </button>
+        </div>
+
+        <div class="history-title">Conversations</div>
+        <div class="history-list" id="history-list">
+            <!-- Conversation history will be injected here -->
+        </div>
+
+        <div style="margin-top: auto; padding: 12px 8px; font-size: 0.8rem; opacity: 0.6;">
+            Built for hustlers by hustlers 🚀
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <div class="status-badge">
+                <span class="status-dot" id="status-dot"></span>
+                <span id="status-text">AI Coach Online</span>
+            </div>
+            <div class="header-actions">
+                <button id="copy-chat-btn" title="Copy Chat" style="background:none; border:none; cursor:pointer; color: var(--text-muted);">
+                    <i class="far fa-copy"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="chat-area" id="chat-area">
+            <!-- Welcome Screen or Messages -->
+            <div class="welcome-screen" id="welcome-screen">
+                <h2>Habari! I'm Msoko AI.</h2>
+                <p>Your expert partner for pricing, marketing, and business growth. How can I help your hustle today?</p>
+                
+                <div class="suggestion-grid" id="suggestion-grid">
+                    <div class="suggestion-card" data-prompt="Price my mitumba stock for Nairobi CBD">
+                        <h4>Pricing Strategy</h4>
+                        <p>Get tips for your mitumba or retail stock.</p>
+                    </div>
+                    <div class="suggestion-card" data-prompt="How to keep my kiosk cashflow steady?">
+                        <h4>Cashflow Advice</h4>
+                        <p>Lessons on saving and record-keeping.</p>
+                    </div>
+                    <div class="suggestion-card" data-prompt="Low-cost marketing for my boda service">
+                        <h4>Marketing Tips</h4>
+                        <p>Grow your customer base for less.</p>
+                    </div>
+                    <div class="suggestion-card" data-prompt="Should I give credit? Manage it safely">
+                        <h4>Risk Management</h4>
+                        <p>Handle credits and debts professionally.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="message-list" id="message-list" style="display: none;">
+                <!-- Messages will appear here -->
+            </div>
+        </div>
+
+        <div class="input-container">
+            <div class="input-box">
+                <textarea id="user-input" placeholder="Ask Msoko AI about your business... (Shift+Enter for new line)" rows="1"></textarea>
+                <div class="input-footer">
+                    <div class="input-actions">
+                        <input type="file" id="image-input" accept="image/*" style="display: none;">
+                        <button class="action-btn" id="attach-btn" title="Attach Image">
+                            <i class="fas fa-image"></i>
+                        </button>
+                        <button class="action-btn" id="voice-btn" title="Voice Input">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <div class="input-tips">Localized coaching in English, Swahili, and Sheng.</div>
+                    </div>
+                    <button class="send-btn" id="send-btn" disabled>
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Msoko AI - Your Smart Business Coach</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-main">
+                <div>
+                    <p class="eyebrow">Hustle Coach • Multilingual</p>
+                    <h1>🤖 Msoko AI</h1>
+                    <p class="subtitle">Pricing, marketing, cash flow, and growth tips—instantly.</p>
+                </div>
+                <div class="status">
+                    <span id="status-dot" class="dot online"></span>
+                    <span id="status-text">Online</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="new-chat-btn" class="ghost-btn">New chat</button>
+                <button id="copy-chat-btn" class="ghost-btn">Copy chat</button>
+            </div>
+        </header>
+        
+        <section class="quick-prompts">
+            <p class="section-title">Quick asks</p>
+            <div class="chips" id="quick-chips">
+                <!-- Filled by script -->
+            </div>
+        </section>
+
+        <div class="chat-container">
+            <div id="chatbox" class="chatbox">
+                <div class="message ai">
+                    <div class="avatar">🤖</div>
+                    <div class="bubble">
+                        <div class="meta">Msoko AI · Coach</div>
+                        <div class="content">
+                            Habari! I’m here to help with pricing, marketing, cash flow, and growth. Ask anything about your hustle. 💪
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="chat-form" class="chat-form">
+                <textarea 
+                    id="user-input" 
+                    placeholder="Ask me anything about your business... (Shift+Enter for new line)" 
+                    autocomplete="off"
+                    rows="2"
+                    required
+                ></textarea>
+                <button type="submit" id="send-btn">Send</button>
+            </form>
+            <p class="footnote">Msoko AI gives practical tips, not financial or legal advice.</p>
+        </div>
+        
+        <footer>
+            <p>Built for hustlers, by hustlers 🚀</p>
+        </footer>
+    </div>
+    
+    <!-- Markdown + sanitization for rich AI responses -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+

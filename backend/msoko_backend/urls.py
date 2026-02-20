@@ -23,8 +23,26 @@ from django.http import JsonResponse
 def home(request):
     return JsonResponse({"message": "Welcome to Msoko AI Backend"})
 
+def health(request):
+    """Lightweight liveness probe."""
+    return JsonResponse({"status": "ok"})
+
+def ready(request):
+    """Readiness probe (extend with DB checks if needed)."""
+    return JsonResponse({"status": "ready"})
+
+from django.conf import settings
+from django.conf.urls.static import static
+from chatbot.views import home_view
+
 urlpatterns = [
-    path('', home),  # handles GET http://127.0.0.1:8000/
+    path('', home_view, name='home'),  # serves the professional frontend
+    path('healthz/', health, name="healthz"),
+    path('readyz/', ready, name="readyz"),
     path('admin/', admin.site.urls),
     path('api/', include('chatbot.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.BASE_DIR / 'static')

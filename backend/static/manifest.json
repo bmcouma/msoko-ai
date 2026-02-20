@@ -1,0 +1,16 @@
+{
+  "name": "Msoko AI",
+  "short_name": "Msoko",
+  "description": "Smart Business Coach for African Entrepreneurs",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/parakeet/512/FFFFFF/shop.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
