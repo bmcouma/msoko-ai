@@ -4,6 +4,8 @@ from django.http import JsonResponse, StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth.models import User
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,6 +20,108 @@ from .serializers import (
     BusinessDocumentSerializer,
 )
 from .utils.agent import default_agent
+
+
+# ─── Authentication Views ────────────────────────────────────────────────────
+
+class RegisterView(APIView):
+    """
+    Creates a new Msoko AI user account.
+    Accepts: first_name, last_name, email, password.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        data = json.loads(request.body)
+        first_name = data.get("first_name", "").strip()
+        last_name = data.get("last_name", "").strip()
+        email = data.get("email", "").strip().lower()
+        password = data.get("password", "")
+        confirm_password = data.get("confirm_password", "")
+
+        if not all([first_name, email, password]):
+            return Response({"error": "First name, email, and password are required."}, status=400)
+        if password != confirm_password:
+            return Response({"error": "Passwords do not match."}, status=400)
+        if User.objects.filter(username=email).exists():
+            return Response({"error": "An account with this email already exists."}, status=400)
+
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+        )
+        login(request, user)
+        return Response({"message": "Account created successfully.", "user": {"first_name": user.first_name}}, status=201)
+
+
+class LoginView(APIView):
+    """
+    Authenticates an existing user by email and password.
+    Accepts: email, password.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        data = json.loads(request.body)
+        email = data.get("email", "").strip().lower()
+        password = data.get("password", "")
+
+        # Support login by email (username field stores the email)
+        user = authenticate(request, username=email, password=password)
+        if user is not None:
+            login(request, user)
+            return Response({"message": "Signed in successfully.", "user": {"first_name": user.first_name}})
+        return Response({"error": "Incorrect email or password. Please try again."}, status=401)
+
+
+class LogoutView(APIView):
+    """
+    Signs out the current user session.
+    """
+    permission_classes = [permissions.AllowAny]  # AllowAny avoids CSRF 403 on POST
+
+    def post(self, request):
+        logout(request)
+        return Response({"message": "Signed out successfully."})
+
+
+class SessionView(APIView):
+    """
+    Returns the current user's authentication state.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            return Response({
+                "authenticated": True,
+                "user": {
+                    "first_name": request.user.first_name,
+                    "email": request.user.email,
+                    "username": request.user.username,
+                }
+            })
+        return Response({"authenticated": False})
+
+
+class PasswordResetRequestView(APIView):
+    """
+    Placeholder for password reset — sends a confirmation message.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        data = json.loads(request.body)
+        email = data.get("email", "")
+        if User.objects.filter(email=email).exists():
+            # In production, send a real reset email here.
+            return Response({"message": "If that email is registered, a reset link has been sent."})
+        return Response({"message": "If that email is registered, a reset link has been sent."})
+
+
 
 def home_view(request):
     """
@@ -99,15 +203,7 @@ def chat_stream_view(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
-from .serializers import (
-    ChatMessageSerializer,
-    ChatThreadSerializer,
-    UserPreferenceSerializer,
-    BusinessProfileSerializer,
-    BusinessGoalSerializer,
-    BusinessDocumentSerializer,
-)
-from .utils.agent import get_msoko_response, get_msoko_streaming_response
+
 
 
 @csrf_exempt

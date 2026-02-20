@@ -278,17 +278,50 @@ document.addEventListener("DOMContentLoaded", () => {
           authSection.innerHTML = `
               <div class="user-pill">
                   <i class="fas fa-user-circle"></i>
-                  <span>${user.first_name || 'Hustler'}</span>
-                  <button id="logout-btn" title="Sign Out"><i class="fas fa-sign-out-alt"></i></button>
+                  <span>${user.first_name || user.email || 'Entrepreneur'}</span>
               </div>
+              <button id="logout-btn" class="nav-item logout-btn" title="Sign Out" style="
+                  margin-top: 8px;
+                  width: 100%;
+                  background: rgba(244,63,94,0.12);
+                  color: #f87171;
+                  border: 1px solid rgba(244,63,94,0.3);
+                  border-radius: 8px;
+                  padding: 10px 14px;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  font-size: 0.875rem;
+                  font-weight: 500;
+                  transition: background 0.2s;
+              ">
+                  <i class="fas fa-sign-out-alt"></i>
+                  <span>Sign Out</span>
+              </button>
           `;
+          document.getElementById("logout-btn").onmouseenter = (e) => e.currentTarget.style.background = "rgba(244,63,94,0.22)";
+          document.getElementById("logout-btn").onmouseleave = (e) => e.currentTarget.style.background = "rgba(244,63,94,0.12)";
           document.getElementById("logout-btn").onclick = handleLogout;
           dashboardBtn.disabled = false;
           profileBtn.disabled = false;
           newChatBtn.disabled = false;
       } else {
           authSection.innerHTML = `
-              <button class="nav-item" id="login-btn">
+              <button class="nav-item" id="login-btn" style="
+                  width: 100%;
+                  background: var(--primary);
+                  color: white;
+                  border: none;
+                  border-radius: 8px;
+                  padding: 10px 14px;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  font-size: 0.875rem;
+                  font-weight: 600;
+              ">
                   <i class="fas fa-user-shield"></i>
                   <span>Sign In / Join</span>
               </button>

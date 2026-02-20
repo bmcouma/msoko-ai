@@ -2,9 +2,9 @@ from django.contrib import admin
 from .models import ChatThread, ChatMessage, BusinessProfile, UserPreference, BusinessGoal, BusinessDocument
 
 # Custom Admin Branding
-admin.site.site_header = "Teklini Strategic Hub | Msoko AI"
-admin.site.site_title = "Teklini Admin"
-admin.site.index_title = "Strategic Business Management"
+admin.site.site_header = "Msoko AI | Teklini Strategic Hub | Teklini Technologies"
+admin.site.site_title = "Teklini Strategic Hub"
+admin.site.index_title = "Strategic Hub Management"
 
 @admin.register(ChatThread)
 class ChatThreadAdmin(admin.ModelAdmin):

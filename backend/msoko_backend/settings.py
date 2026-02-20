@@ -14,6 +14,7 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
+    "jazzmin",                          # Must be first — overrides Django admin templates
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -114,3 +115,96 @@ REST_FRAMEWORK = {
 # Media files
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# ─── Teklini Strategic Hub — Premium Admin Theme ────────────────────────────
+JAZZMIN_SETTINGS = {
+    # Basic Branding
+    "site_title": "Teklini Strategic Hub",
+    "site_header": "Msoko AI | Teklini Strategic Hub",
+    "site_brand": "Teklini Technologies",
+    "site_logo": "images/logo.png",
+    "site_logo_classes": "img-circle",
+    "site_icon": "images/logo.png",
+    "welcome_sign": "Welcome to the Teklini Strategic Hub",
+    "copyright": "© 2026 Teklini Technologies. All rights reserved.",
+
+    # Top Navigation Links
+    "topmenu_links": [
+        {"name": "🏠 Msoko AI", "url": "/", "new_window": False},
+        {"name": "📊 Dashboard", "url": "admin:index"},
+        {"name": "🌐 Teklini Services", "url": "/services/", "new_window": True},
+        {"name": "💬 WhatsApp", "url": "https://wa.me/254791832015", "new_window": True},
+    ],
+
+    # User Menu at top right
+    "usermenu_links": [
+        {"name": "🌐 Live Site", "url": "/", "new_window": False, "icon": "fas fa-external-link-alt"},
+    ],
+
+    # Sidebar Navigation
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+
+    # Custom Icons per Model
+    "icons": {
+        "auth": "fas fa-shield-alt",
+        "auth.user": "fas fa-user-tie",
+        "auth.Group": "fas fa-users-cog",
+        "chatbot.ChatThread": "fas fa-comments",
+        "chatbot.ChatMessage": "fas fa-comment-dots",
+        "chatbot.BusinessProfile": "fas fa-store",
+        "chatbot.BusinessGoal": "fas fa-bullseye",
+        "chatbot.BusinessDocument": "fas fa-file-alt",
+        "chatbot.UserPreference": "fas fa-sliders-h",
+    },
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+
+    # Layout & Appearance
+    "related_modal_active": True,
+    "custom_css": None,
+    "custom_js": None,
+    "use_google_fonts_cdn": True,
+    "show_ui_builder": False,
+    "changeform_format": "horizontal_tabs",
+    "changeform_format_overrides": {
+        "auth.user": "collapsible",
+        "auth.group": "vertical_tabs",
+    },
+    "language_chooser": False,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    # Dark professional theme
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-dark",
+    "accent": "accent-teal",
+    "navbar": "navbar-dark",
+    "no_navbar_border": True,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-teal",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "darkly",
+    "dark_mode_theme": "darkly",
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    },
+}
