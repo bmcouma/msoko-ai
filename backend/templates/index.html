@@ -55,6 +55,14 @@
                 <i class="fas fa-question-circle"></i>
                 <span>Help & Support</span>
             </button>
+            <button class="nav-item" id="about-btn" onclick="showAbout()">
+                <i class="fas fa-info-circle"></i>
+                <span>About Msoko AI</span>
+            </button>
+            <a href="/services/" class="nav-item" style="text-decoration: none;">
+                <i class="fas fa-external-link-alt"></i>
+                <span>Teklini Services</span>
+            </a>
         </div>
 
         <div class="history-title">Conversations</div>
@@ -72,9 +80,18 @@
         <div class="sidebar-footer">
             <div class="attribution">Msoko AI © 2026</div>
             <div class="built-by">Built by <span class="brand">Teklini Technologies</span></div>
-            <a href="https://wa.me/254XXXXXXXXX" target="_blank" class="support-link">
-                <i class="fab fa-whatsapp"></i> Msoko AI Support
-            </a>
+            <div class="contact-stack" style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <a href="https://wa.me/254791832015?text=Hello%20Teklini%20Technologies.%20I%20am%20interested%20in%20your%20IT%20Support,%20Web%20Development,%20or%20AI%20Integration%20services.%20Please%20advise%20on%20the%20next%20steps." target="_blank" class="support-link">
+                    <i class="fab fa-whatsapp"></i> WhatsApp Support
+                </a>
+                <a href="tel:+254791832015" class="support-link" style="color: var(--text-muted); font-size: 0.75rem;">
+                    <i class="fas fa-phone-alt"></i> Call for Assistance
+                </a>
+                <div class="legal-links" style="margin-top: 8px; font-size: 0.7rem; opacity: 0.6; display: flex; gap: 12px; justify-content: center;">
+                    <a href="/terms/" style="color: inherit; text-decoration: none;">Terms</a>
+                    <a href="/privacy/" style="color: inherit; text-decoration: none;">Privacy</a>
+                </div>
+            </div>
         </div>
     </aside>
 
@@ -148,6 +165,43 @@
             </div>
         </div>
     </main>
+
+    <!-- About Modal -->
+    <div id="about-modal" class="modal-overlay" style="display:none;">
+        <div class="modal auth-modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> About Msoko AI</h3>
+                <button class="close-btn" onclick="hideAbout()">&times;</button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <div class="brand-section" style="text-align: center; margin-bottom: 24px;">
+                    <div class="brand-logo" style="font-size: 2rem; color: var(--primary); font-weight: 800; margin-bottom: 8px;">Msoko AI</div>
+                    <div class="brand-sub" style="font-size: 0.9rem; color: var(--text-muted);">Built by Teklini Technologies</div>
+                </div>
+                <div class="help-section">
+                    <h4>Practical Intelligence</h4>
+                    <p>Msoko AI is an intelligent business assistant developed by **Teklini Technologies**. It is designed to support entrepreneurs and growing businesses with pricing guidance, strategy insights, and clear decision support using structured reasoning and simple language.</p>
+                </div>
+                <div class="help-section">
+                    <h4>Our Mission</h4>
+                    <p>Msoko AI focuses on practical intelligence — helping business owners think clearly, act confidently, and grow sustainably.</p>
+                </div>
+                <div class="help-section" style="border-top: 1px solid var(--border); padding-top: 16px; margin-top: 16px;">
+                    <p style="font-weight: 600; margin-bottom: 12px;">Need high-level Engineering, AI, or IT support?</p>
+                    <a href="/services/" class="btn btn-primary" style="width: 100%; border-radius: 8px;">
+                        Explore Teklini Digital Solutions
+                    </a>
+                </div>
+                <div class="help-section">
+                    <p style="font-style: italic; font-size: 0.85rem; opacity: 0.8;">Msoko AI is part of Teklini Technologies’ mission to build intelligent systems that empower African businesses.</p>
+                    <div style="margin-top: 12px; display: flex; gap: 16px; font-size: 0.8rem; opacity: 0.6;">
+                        <a href="/terms/" style="color: inherit; text-decoration: underline;">Terms of Service</a>
+                        <a href="/privacy/" style="color: inherit; text-decoration: underline;">Privacy Policy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Dynamic Help & Legal Modals -->
     <div id="help-modal" class="modal-overlay" style="display:none;">

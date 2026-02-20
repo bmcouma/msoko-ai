@@ -8,8 +8,8 @@ from .knowledge_loader import knowledge_store
 
 class MsokoAgent:
     """
-    A professional modular AI agent for Msoko AI, 
-    following OpenRouter industrial standards.
+    Core strategy engine for Msoko AI.
+    Handles complex business logic and real-time strategic reasoning.
     """
     
     def __init__(self, model: str = "openrouter/free", api_key: Optional[str] = None):
@@ -32,8 +32,8 @@ class MsokoAgent:
 
     def generate_system_prompt(self, context: Optional[Dict] = None) -> str:
         """
-        Industrial-standard prompt for a Global Strategic Consultant.
-        Locked to English only. Supports all forms of monetization (Digital Skills, Commodities, etc.).
+        Generates the strategic core logic for the Senior Business Coach.
+        Optimized for deep market analysis and sustainable growth guidance.
         """
         user_name = context.get("user_name", "User") if context else "User"
         
@@ -75,9 +75,9 @@ class MsokoAgent:
             "3. DECISION SUPPORT: Help business owners think clearly and act confidently.\n\n"
 
             "STRUCTURED REASONING (INTERNAL):\n"
-            "1. RECALL: What is this user's niche? What phase of growth are they in?\n"
-            "2. STRATEGIZE: What is the most effective, structured way for them to act today?\n"
-            "3. CHECK: Is my output in simple English? Did I avoid hype/slang?\n\n"
+            "1. RECALL: Identify user niche and current development stage.\n"
+            "2. STRATEGIZE: Formulate the most effective, structured path for today's action.\n"
+            "3. CHECK: Verify for professional clarity and simple English. Zero slang.\n\n"
 
             "STRICT OPERATING RULES:\n"
             "1. TONE: Professional, supportive, and direct. NO SLANG. NO UNNECESSARY HYPE.\n"
@@ -96,12 +96,21 @@ class MsokoAgent:
             "[How to find international clients?] [Review my GitHub profile] [Pricing strategies for freelancers]\n"
         )
 
-        # Advanced Vision Logic
+        # Vision Logic: Visual Strategic Analysis
         if context and context.get("is_multimodal"):
             prompt += (
-                "\n\nVISION ENGINE:\n"
-                "- Identify products/items in image.\n"
-                "- Provide ONE simple English tip based on the image context (pricing, display, or quantity)."
+                "\n\nVISUAL STRATEGIC ANALYSIS:\n"
+                "- Analyze professional context from provided visuals (inventory, stock, documents).\n"
+                "- Provide ONE clear, actionable suggestion based on visual data."
+            )
+
+        # Core Logic: Real-time Market Access
+        if context and context.get("search_enabled"):
+            prompt += (
+                "\n\nMARKET INTELLIGENCE (ACTIVE):\n"
+                "- You have access to real-time global trends and business news.\n"
+                "- Cross-reference internal logic with live market conditions.\n"
+                "- Cite specific market trends when providing time-sensitive advice."
             )
             
         return prompt
@@ -232,7 +241,7 @@ class MsokoAgent:
 # Singleton instance for easy access
 default_agent = MsokoAgent()
 
-def get_msoko_response(user_message: str, history: Optional[List[Dict[str, str]]] = None, user_id: Optional[int] = None, image_data: Optional[str] = None, context: Optional[Dict] = None) -> str:
+def get_msoko_response(user_message: str, history: Optional[List[Dict[str, str]]] = None, user_id: Optional[int] = None, image_data: Optional[str] = None, context: Optional[Dict] = None, search_enabled: bool = False) -> str:
     """
     Convenience function to get a non-streaming response.
     """
@@ -241,9 +250,11 @@ def get_msoko_response(user_message: str, history: Optional[List[Dict[str, str]]
         ctx["user_id"] = user_id
     if image_data:
         ctx["is_multimodal"] = True
+    if search_enabled:
+        ctx["search_enabled"] = True
     return default_agent.get_response(user_message, history=history, context=ctx, image_data=image_data)
 
-def get_msoko_streaming_response(user_message: str, history: Optional[List[Dict[str, str]]] = None, user_id: Optional[int] = None, image_data: Optional[str] = None, context: Optional[Dict] = None):
+def get_msoko_streaming_response(user_message: str, history: Optional[List[Dict[str, str]]] = None, user_id: Optional[int] = None, image_data: Optional[str] = None, context: Optional[Dict] = None, search_enabled: bool = False):
     """
     Convenience function to get a streaming response.
     """
@@ -252,4 +263,6 @@ def get_msoko_streaming_response(user_message: str, history: Optional[List[Dict[
         ctx["user_id"] = user_id
     if image_data:
         ctx["is_multimodal"] = True
+    if search_enabled:
+        ctx["search_enabled"] = True
     return default_agent.get_streaming_response(user_message, history=history, context=ctx, image_data=image_data)

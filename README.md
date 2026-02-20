@@ -1,52 +1,54 @@
-# Msoko AI V3: Strategic Hustle Intelligence 🚀
+# Msoko AI: Strategic Engineering for Entrepreneurs 🚀
 
-Msoko AI is a sophisticated AI business coach designed specifically for African entrepreneurs (mama mbogas, boda riders, kiosk owners, and mitumba retailers). V3 elevates the platform from a chat assistant to a **Strategic Intelligence Partner**.
+Built by **Teklini Technologies**
 
-## 🌟 V3 Key Features
+Msoko AI is a premium strategic coaching platform designed to help entrepreneurs think clearly, act confidently, and scale sustainably. This project represents a handcrafted engineering commitment to empowering African businesses with high-level intelligence and practical decision support.
 
-### 🧠 Strategic Coaching
+## 🌟 Core Strategic Capabilities
 
-- **Business Profiler**: Personalized advice based on sector (Retail, Agri, Wholesale, etc.) and location.
-- **Executive Dashboard**: A unified view of consultations, growth metrics, and active goals.
-- **Goal Management**: Set and track revenue, inventory, and savings targets with Mama Msoko's guidance.
+### 🧠 Strategic Coaching Hub
 
-### 👁️ Multimodal Intelligence
+- **Business Profiler**: Personalized, context-aware advice tailored to your specific venture stage and sector.
+- **Executive Dashboard**: A mission-critical hub for tracking growth metrics, active goals, and strategic insights.
+- **Structured Logic**: Built with an internal reasoning engine that prioritizes practical, sustainable growth over generic advice.
 
-- **Advanced Vision Analysis**: Upload photos of your inventory or displays for automated counts, organization tips, and restocking advice.
-- **Voice Interaction**: Speak directly to Mama Msoko in a natural blend of English, Swahili, and Sheng.
+### 👁️ Multimodal Intelligence Stack
 
-### ⚡ Professional Performance
+- **Universal Attachment System**: Seamlessly process business documents (PDFs, Docs) and inventory visuals for deep analysis.
+- **Market Intelligence**: Integrated real-time research capabilities to cross-reference strategies with live market conditions.
+- **Voice Strategic Flow**: Engage in hands-free strategic sessions using modern voice foundations.
 
-- **Real-time Streaming (SSE)**: Industrial-standard low latency responses.
-- **Progressive Web App (PWA)**: Installable on home screens with service worker caching for offline resilience in market environments.
-- **Semantic RAG**: A localized market knowledge base providing real-time pricing and trend data.
+### ⚡ Industrial Excellence
 
-## 🛠️ Tech Stack
+- **Focused Landing UI**: A minimalist, distraction-free environment ("What are you working on?") built for strategic deep-work.
+- **Adaptive Visual Architecture**: Seamless transitions between Light, Dark, and System modes to suit your working conditions.
+- **Resilient Connectivity (PWA)**: Full offline support and home-screen installation for reliable performance in any environment.
 
-- **Backend**: Django, Django REST Framework, SSE (Server-Sent Events).
-- **Frontend**: Modern Vanilla JS, CSS Glassmorphism, PWA Manifest.
-- **AI Engine**: OpenRouter (Auto-selecting best-in-class free models), Vision-capable multimodal payloads.
-- **Context Management**: SQLite persistent threads & message history.
+## 🛠️ Engineering Stack
 
-## 🚀 Getting Started
+- **Core Strategy**: Django & REST Framework powered by a high-fidelity reasoning engine.
+- **Interface**: Handcrafted Vanilla JS & Industrial CSS for low-latency, premium performance.
+- **Intelligence**: Integrated OpenRouter foundations with multimodal vision and document analysis.
 
-1. **Clone the repo**
-2. **Setup Environment**:
+## 🚀 Deployment Guide
+
+1. **Clone the repository**
+2. **Environment Configuration**:
    ```bash
    cp .env.example .env
-   # Add your OPENAI_API_KEY (OpenRouter)
+   # Add your OPENAI_API_KEY
    ```
-3. **Migrate & Run**:
+3. **Database & Execution**:
    ```bash
    python manage.py migrate
    python manage.py runserver
    ```
-4. **Access**: [http://localhost:8000](http://localhost:8000)
+4. **Access Control**: Join the hub at [http://localhost:8000](http://localhost:8000)
 
-## 🧙 Persona: Mama Msoko
+## 🏢 About Teklini Technologies
 
-Mama Msoko isn't just an AI; she's a "Biashara Mentor" who speaks your language. She understands the hustle of Nairobi markets and provides street-smart wisdom to help you grow your Kitu Safi!
+We build intelligent systems that solve real problems. Msoko AI is our flagship commitment to providing entrepreneurs with the same strategic power used by global corporations, delivered in a simple, practical, and effective way.
 
 ---
 
-_Built with ❤️ for the empowerment of everyday entrepreneurs._
+© 2026 Teklini Technologies. All rights reserved.

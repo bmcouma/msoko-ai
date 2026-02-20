@@ -33,10 +33,13 @@ def ready(request):
 
 from django.conf import settings
 from django.conf.urls.static import static
-from chatbot.views import home_view
+from chatbot.views import home_view, services_view, terms_view, privacy_view
 
 urlpatterns = [
     path('', home_view, name='home'),  # serves the professional frontend
+    path('services/', services_view, name='services'), # Teklini Authority Hub
+    path('terms/', terms_view, name='terms'), # Legal
+    path('privacy/', privacy_view, name='privacy'), # Privacy
     path('healthz/', health, name="healthz"),
     path('readyz/', ready, name="readyz"),
     path('admin/', admin.site.urls),

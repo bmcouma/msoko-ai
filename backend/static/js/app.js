@@ -963,11 +963,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Industrial Product Ready Modules ---
 
-  window.showHelp = () => {
+  window.showHelp = function() {
     document.getElementById("help-modal").style.display = "flex";
   };
-  window.hideHelp = () => {
+  window.hideHelp = function() {
     document.getElementById("help-modal").style.display = "none";
+  };
+  
+  window.showAbout = function() {
+    document.getElementById("about-modal").style.display = "flex";
+  };
+  window.hideAbout = function() {
+    document.getElementById("about-modal").style.display = "none";
   };
 
   window.showLegal = (type) => {

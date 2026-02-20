@@ -4,7 +4,7 @@
   --primary-hover: #059669;
   --secondary: #3b82f6;
   
-  /* Light Theme (Default) */
+  /* Dynamic Theme Toggle & Mode Interaction */
   --bg-main: #f1f5f9;
   --bg-sidebar: #0f172a;
   --sidebar-text: #94a3b8;
@@ -371,7 +371,7 @@ header {
   margin: 0;
 }
 
-/* Landing UI Strategy Hub (Phase 13) */
+/* Strategy Hub & Landing Interface Architecture */
 .welcome-screen {
   display: flex;
   flex-direction: column;

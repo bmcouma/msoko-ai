@@ -25,6 +25,24 @@ def home_view(request):
     """
     return render(request, "index.html")
 
+def services_view(request):
+    """
+    Serves the Teklini Technologies Digital Solutions authority page.
+    """
+    return render(request, "services.html")
+
+def terms_view(request):
+    """
+    Serves the Msoko AI Terms of Service.
+    """
+    return render(request, "terms.html")
+
+def privacy_view(request):
+    """
+    Serves the Msoko AI Privacy Policy.
+    """
+    return render(request, "privacy.html")
+
 @csrf_exempt
 def chat_stream_view(request):
     """
@@ -38,6 +56,7 @@ def chat_stream_view(request):
         user_input = data.get("message", "").strip()
         thread_id = data.get("thread_id")
         image_data = data.get("image") # Base64 data:image/...;base64,...
+        search_enabled = data.get("search_enabled", False)
         
         # Determine current thread
         thread = None
@@ -65,7 +84,7 @@ def chat_stream_view(request):
             if image_data: context["is_multimodal"] = True
             
             uid = request.user.id if request.user.is_authenticated else None
-            for chunk in get_msoko_streaming_response(user_input, history=history, user_id=uid, image_data=image_data, context=context):
+            for chunk in get_msoko_streaming_response(user_input, history=history, user_id=uid, image_data=image_data, context=context, search_enabled=search_enabled):
                 full_reply.append(chunk)
                 yield f"data: {json.dumps({'text': chunk})}\n\n"
             
@@ -200,8 +219,9 @@ class MessageListCreateView(APIView):
             thread=thread, role="user", content=content
         )
 
-        # Get AI reply
-        ai_reply = get_msoko_response(content, user_id=request.user.id)
+        # Request strategic guidance
+        search_enabled = request.data.get("search_enabled", False)
+        ai_reply = get_msoko_response(content, user_id=request.user.id, search_enabled=search_enabled)
         ai_msg = ChatMessage.objects.create(
             thread=thread, role="ai", content=ai_reply or ""
         )
@@ -378,10 +398,8 @@ class DashboardView(APIView):
             },
             "goals": goal_data,
             "recent_insights": [
-                f"Msoko AI Suggests: You have {len(goals)} active goals. Keep pushing!",
-                "Trending: Demand for specialized digital skills is rising globally.",
-                "Strategy: Position your skills as solutions, not just services."
-            ]
+                f"Strategic Insight: You have {len(goals)} active goals. focus on high-impact milestones."
+            ] if goals else ["Tip: Complete your Business Profile for personalized strategy insights."]
         }
         return Response(data)
 
