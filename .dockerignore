@@ -1,0 +1,57 @@
+# ─── .dockerignore — Msoko AI ─────────────────────────────────────────────────
+# Exclude files/dirs that should NOT be in the Docker build context
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment files (never bake secrets into images)
+.env
+.env.*
+!.env.example
+
+# Django runtime artifacts
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+
+# Git
+.git/
+.gitignore
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Tests / Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+*.xml
+
+# Docs / CI
+docs/
+*.md
+!README.md
+
+# Node (if any frontend tooling)
+node_modules/
+npm-debug.log*

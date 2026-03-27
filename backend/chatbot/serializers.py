@@ -79,3 +79,36 @@ class UserPreferenceSerializer(serializers.ModelSerializer):
             "voice_enabled",
         ]
 
+
+# ─── dj-rest-auth Custom Registration Serializer ──────────────────────────────
+# This adds first_name / last_name to the default allauth registration flow
+# and auto-creates a BusinessProfile on first sign-up.
+
+try:
+    from dj_rest_auth.registration.serializers import RegisterSerializer
+
+    class CustomRegisterSerializer(RegisterSerializer):
+        first_name = serializers.CharField(max_length=150, required=True)
+        last_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
+
+        def get_cleaned_data(self):
+            data = super().get_cleaned_data()
+            data["first_name"] = self.validated_data.get("first_name", "")
+            data["last_name"] = self.validated_data.get("last_name", "")
+            return data
+
+        def save(self, request):
+            user = super().save(request)
+            user.first_name = self.validated_data.get("first_name", "")
+            user.last_name = self.validated_data.get("last_name", "")
+            user.save(update_fields=["first_name", "last_name"])
+            # Auto-create a BusinessProfile for the new user
+            BusinessProfile.objects.get_or_create(
+                user=user,
+                defaults={"business_name": f"{user.first_name}'s Venture"},
+            )
+            return user
+
+except ImportError:
+    # dj-rest-auth not installed yet — graceful fallback during migration
+    pass
