@@ -1,10 +1,16 @@
 import os
+import logging
 import httpx
 from dotenv import load_dotenv
 from pathlib import Path
 from typing import List, Dict, Optional
 import json
 from .knowledge_loader import knowledge_store
+
+logger = logging.getLogger("msoko.ai_usage")
+
+# Cost estimate per 1K tokens (USD) — ballpark for OpenRouter free tier
+_COST_PER_1K = 0.0015
 
 class MsokoAgent:
     """
@@ -17,7 +23,7 @@ class MsokoAgent:
         env_path = Path(__file__).resolve().parent.parent.parent / '.env'
         load_dotenv(dotenv_path=env_path)
         
-        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
+        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
         if self.api_key:
             self.api_key = self.api_key.strip()
             
@@ -160,8 +166,19 @@ class MsokoAgent:
                 response = client.post(self.base_url, headers=self.headers, json=body)
                 response.raise_for_status()
                 result = response.json()
+                usage = result.get("usage", {})
+                prompt_tokens = usage.get("prompt_tokens", 0)
+                completion_tokens = usage.get("completion_tokens", 0)
+                total_tokens = prompt_tokens + completion_tokens
+                cost_usd = (total_tokens / 1000) * _COST_PER_1K
+                logger.info(
+                    f"mode=sync model={self.model} "
+                    f"prompt_tokens={prompt_tokens} completion_tokens={completion_tokens} "
+                    f"total_tokens={total_tokens} est_cost_usd={cost_usd:.6f}"
+                )
                 return result["choices"][0]["message"]["content"].strip()
         except Exception as e:
+            logger.error(f"OpenRouter sync error: {e}")
             return f"System Error: {str(e)}"
 
     def get_streaming_response(self, user_message: str, history: Optional[List[Dict[str, str]]] = None, context: Optional[Dict] = None, image_data: Optional[str] = None):
@@ -221,20 +238,33 @@ class MsokoAgent:
             # But let's stick to the user's intent or openrouter/free for now.
             pass
 
+        token_count = 0
         try:
             with httpx.stream("POST", self.base_url, headers=self.headers, json=body, timeout=60.0) as response:
                 response.raise_for_status()
                 for line in response.iter_lines():
-                    if not line: continue
+                    if not line:
+                        continue
                     if line.startswith("data: "):
                         data_str = line[6:]
-                        if data_str == "[DONE]": break
+                        if data_str == "[DONE]":
+                            break
                         try:
                             data_json = json.loads(data_str)
                             delta = data_json["choices"][0].get("delta", {}).get("content", "")
-                            if delta: yield delta
-                        except: continue
+                            if delta:
+                                token_count += 1  # Approximate: 1 delta chunk ≈ 1-3 tokens
+                                yield delta
+                        except:
+                            continue
+            # Log after stream completes
+            est_cost = (token_count / 1000) * _COST_PER_1K
+            logger.info(
+                f"mode=stream model={self.model} "
+                f"approx_chunks={token_count} est_cost_usd={est_cost:.6f}"
+            )
         except Exception as e:
+            logger.error(f"OpenRouter stream error: {e}")
             yield f"Vision/Streaming Error: {str(e)}"
 
 

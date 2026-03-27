@@ -1,0 +1,77 @@
+# ─── Msoko AI — Docker Compose ────────────────────────────────────────────────
+# Services: web (Django + Gunicorn), db (PostgreSQL 16), redis
+# Usage:
+#   docker-compose up --build          # Start all services
+#   docker-compose exec web python backend/manage.py migrate
+#   docker-compose exec web python backend/manage.py createsuperuser
+
+version: "3.9"
+
+services:
+
+  # ── Django + Gunicorn ──────────────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: msoko_web
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:8000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER:-msoko_user}:${POSTGRES_PASSWORD:-msoko_pass}@db:5432/${POSTGRES_DB:-msoko_db}
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - media_data:/app/backend/media
+      - static_data:/app/backend/staticfiles
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── PostgreSQL 16 ──────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: msoko_db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-msoko_db}
+      - POSTGRES_USER=${POSTGRES_USER:-msoko_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-msoko_pass}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-msoko_user} -d ${POSTGRES_DB:-msoko_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ──────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: msoko_redis
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
+  media_data:
+  static_data:
