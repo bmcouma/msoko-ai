@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+
+echo "Applying database migrations..."
+python backend/manage.py migrate --noinput
+
+echo "Starting server..."
+exec "$@"

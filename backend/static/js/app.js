@@ -43,6 +43,39 @@ function toggleTheme() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Global Fetch Interceptor for JWT Cookies & CSRF
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+  }
+
+  const originalFetch = window.fetch;
+  window.fetch = async function(...args) {
+      let [resource, config] = args;
+      if (typeof resource === 'string' && resource.startsWith('/api/')) {
+          config = config || {};
+          config.credentials = 'include'; // crucial for JWT httpOnly cookies
+          
+          config.headers = config.headers || {};
+          const csrf = getCookie('csrftoken');
+          if (csrf && !config.headers['X-CSRFToken']) {
+              config.headers['X-CSRFToken'] = csrf;
+          }
+          args = [resource, config];
+      }
+      return originalFetch(...args);
+  };
+
   const userInput = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
   const chatArea = document.getElementById("chat-area");

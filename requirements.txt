@@ -5,16 +5,17 @@ asgiref>=3.8
 
 # ─── Authentication ────────────────────────────────────────────────────────────
 djangorestframework-simplejwt>=5.3
-dj-rest-auth>=7.0
-django-allauth>=0.63
+dj-rest-auth==7.0.0
+django-allauth==0.63.6
 
 # ─── Database ─────────────────────────────────────────────────────────────────
 psycopg2-binary>=2.9              # PostgreSQL adapter
 dj-database-url>=2.2              # Parse DATABASE_URL env var
 
-# ─── Redis / Cache ────────────────────────────────────────────────────────────
+# ─── Redis / Cache / Async ────────────────────────────────────────────────────
 redis>=5.0
 django-redis>=5.4
+celery>=5.4.0
 
 # ─── Static Files / Production ────────────────────────────────────────────────
 whitenoise>=6.7
@@ -22,6 +23,10 @@ gunicorn>=22.0
 
 # ─── HTTP & AI ────────────────────────────────────────────────────────────────
 httpx>=0.27
+llama-index>=0.10.0
+chromadb>=0.4.0
+llama-index-vector-stores-chroma>=0.1.0
+llama-index-embeddings-huggingface>=0.1.0
 
 # ─── Environment ──────────────────────────────────────────────────────────────
 python-dotenv>=1.0
@@ -34,8 +39,7 @@ django-cors-headers>=4.3
 
 # ─── Observability / Logging ──────────────────────────────────────────────────
 # (Python stdlib logging is used; add sentry-sdk for production error tracking)
-# sentry-sdk>=2.0  # Uncomment for production
-
+sentry-sdk>=2.0.0
 # ─── File handling ────────────────────────────────────────────────────────────
 Pillow>=10.3                      # Image processing
 africastalking>=2.0               # SMS / Africa APIs (optional)

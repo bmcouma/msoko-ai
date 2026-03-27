@@ -1,0 +1,56 @@
+name: Msoko AI CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: msoko_user
+          POSTGRES_PASSWORD: msoko_pass
+          POSTGRES_DB: msoko_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Django Checks and Migrations Test
+      env:
+        DATABASE_URL: postgres://msoko_user:msoko_pass@localhost:5432/msoko_db
+        REDIS_URL: redis://localhost:6379/1
+        SECRET_KEY: ci_dummy_key_only_for_testing
+        DEBUG: "False"
+      run: |
+        cd backend
+        python manage.py check --deploy
+        python manage.py makemigrations --check --dry-run

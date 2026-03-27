@@ -6,6 +6,8 @@
 [![DRF](https://img.shields.io/badge/DRF-REST%20Framework-red?style=flat-square&logo=django)](https://www.django-rest-framework.org/)
 [![OpenRouter](https://img.shields.io/badge/AI-OpenRouter%20Multimodal-6C63FF?style=flat-square&logo=openai&logoColor=white)](https://openrouter.ai/)
 [![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=flat-square&logo=googlechrome&logoColor=white)](https://web.dev/progressive-web-apps/)
+[![CI Status](https://github.com/bmcouma/msoko-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/bmcouma/msoko-ai/actions)
+[![Deploy on Railway](https://img.shields.io/badge/Deploy-Railway-black?style=flat-square&logo=railway)](https://railway.app/new/template)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![Made in Kenya](https://img.shields.io/badge/Made%20in-Kenya%20🇰🇪-black?style=flat-square)](https://teklini.tech)
 
@@ -159,15 +161,35 @@ Visit [http://localhost:8000](http://localhost:8000)
 
 > **Services started**: Django + Gunicorn (`web`), PostgreSQL (`db`), Redis (`redis`).
 
----
+### 🚢 Deploy to Railway (Production)
 
-### Deploy to Railway (One-Click)
+Msoko AI is natively configured for 1-click deployments to platforms like **Railway** or Heroku.
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template)
 
-1. Set environment variables from `.env.example` in the Railway dashboard.
-2. Add a PostgreSQL plugin and a Redis plugin.
-3. Deploy from the `main` branch.
+#### Step 1: Connect your Repo
+1. Sign up on [Railway](https://railway.app/).
+2. Click **New Project** > **Deploy from GitHub repo**.
+3. Select `bmcouma/msoko-ai`.
+
+#### Step 2: Add Databases
+1. In your Railway project, click **New** > **Database** > Add both **PostgreSQL** and **Redis**.
+
+#### Step 3: Configure Environment Variables
+Navigate to your Web Service > **Variables** and add:
+- `DATABASE_URL` = (Reference the connected Postgres URL)
+- `REDIS_URL` = (Reference the connected Redis URL)
+- `CELERY_BROKER_URL` = (Same as Redis URL)
+- `OPENROUTER_API_KEY` = your OpenRouter key
+- `SECRET_KEY` = (A strong, random Django secret)
+- `DEBUG` = `False`
+- `PORT` = `8000`
+
+#### Step 4: Deploy & Test
+1. Railway will automatically detect the `Procfile` and `requirements.txt`.
+2. Gunicorn and WhiteNoise will serve the app. 
+3. Database migrations run automatically via `entrypoint.sh`.
+4. The first time the app starts, the LlamaIndex engine will automatically index the `backend/chatbot/rag/data` folder to populate the Vector Store.
 
 ---
 
@@ -179,9 +201,9 @@ See [`.env.example`](.env.example) for a full list. Key ones:
 |---|---|
 | `SECRET_KEY` | Django secret key |
 | `OPENROUTER_API_KEY` | Your OpenRouter API key |
-| `DATABASE_URL` | Postgres connection string |
+| `DATABASE_URL` | Postgres connection string (e.g. `postgres://user:password@host:port/db`) |
 | `REDIS_URL` | Redis connection string |
-| `DEBUG` | `True` for dev, `False` for prod |
+| `DEBUG` | `False` for dev, `False` for prod |
 
 ---
 
