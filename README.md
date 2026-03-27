@@ -201,9 +201,9 @@ See [`.env.example`](.env.example) for a full list. Key ones:
 |---|---|
 | `SECRET_KEY` | Django secret key |
 | `OPENROUTER_API_KEY` | Your OpenRouter API key |
-| `DATABASE_URL` | Postgres connection string |
+| `DATABASE_URL` | Postgres connection string (e.g. `postgres://user:password@host:port/db`) |
 | `REDIS_URL` | Redis connection string |
-| `DEBUG` | `True` for dev, `False` for prod |
+| `DEBUG` | `False` for dev, `False` for prod |
 
 ---
 

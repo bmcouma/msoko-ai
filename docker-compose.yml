@@ -21,7 +21,7 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgres://${POSTGRES_USER:-msoko_user}:${POSTGRES_PASSWORD:-msoko_pass}@db:5432/${POSTGRES_DB:-msoko_db}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - media_data:/app/backend/media
