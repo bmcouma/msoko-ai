@@ -43,14 +43,20 @@ COPY --from=builder /install /usr/local
 # Copy the entire project
 COPY . .
 
-# Collect static files
+# Collect static files during build
 RUN python backend/manage.py collectstatic --noinput --settings=msoko_backend.settings
+
+# Copy and prepare entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 # Create a non-root user for security
 RUN addgroup --system msoko && adduser --system --ingroup msoko msoko
+RUN chown -R msoko:msoko /app
 USER msoko
 
 EXPOSE $PORT
 
+ENTRYPOINT ["/app/entrypoint.sh"]
 # Gunicorn entry point — loads app from backend/
 CMD ["sh", "-c", "gunicorn msoko_backend.wsgi:application --chdir backend --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120 --log-level info"]

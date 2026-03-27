@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from pathlib import Path
 from typing import List, Dict, Optional
 import json
-from .knowledge_loader import knowledge_store
+from ..rag.engine import rag_engine
+from .workers import MarketResearcherAgent, GoalCoachAgent, VisionAnalystAgent
 
 logger = logging.getLogger("msoko.ai_usage")
 
@@ -35,6 +36,11 @@ class MsokoAgent:
             "X-Title": "Msoko AI",
             "Content-Type": "application/json"
         }
+        
+        # Initialize specialized agents
+        self.market_agent = MarketResearcherAgent()
+        self.goal_agent = GoalCoachAgent()
+        self.vision_agent = VisionAnalystAgent()
 
     def generate_system_prompt(self, context: Optional[Dict] = None) -> str:
         """
@@ -46,24 +52,19 @@ class MsokoAgent:
         # Deep User Context Injection
         personal_context = ""
         if context and "user_id" in context:
+            uid = context["user_id"]
+            # Basic profile info
             try:
-                from ..models import BusinessProfile, BusinessGoal, BusinessDocument
-                uid = context["user_id"]
+                from ..models import BusinessProfile
                 profile = BusinessProfile.objects.get(user_id=uid)
-                goals = BusinessGoal.objects.filter(user_id=uid).order_by("-created_at")[:2]
-                docs = BusinessDocument.objects.filter(user_id=uid).order_by("-uploaded_at")[:2]
-                
-                goal_list = ", ".join([f"{g.title} ({g.get_status_display()})" for g in goals])
-                doc_list = ", ".join([f"{d.filename} ({d.file_type})" for d in docs])
-                
-                personal_context = (
-                    f"USER STRATEGICS BANK:\n"
-                    f"- Venture: '{profile.business_name}' ({profile.get_sector_display()}) in {profile.location}.\n"
-                    f"- Active Goals: {goal_list if goal_list else 'None set'}.\n"
-                    f"- Analysis Base: {doc_list if doc_list else 'No documents uploaded'}.\n"
-                )
+                personal_context += f"USER VENTURE: '{profile.business_name}' ({profile.get_sector_display()}) in {profile.location}.\n"
             except:
                 pass
+            
+            # Goal Coach specialized injection
+            goal_data = self.goal_agent.analyze(uid)
+            if goal_data:
+                personal_context += f"{goal_data}\n"
 
         prompt = (
             f"You are Msoko AI, an intelligent business assistant built by Teklini Technologies. "
@@ -104,11 +105,8 @@ class MsokoAgent:
 
         # Vision Logic: Visual Strategic Analysis
         if context and context.get("is_multimodal"):
-            prompt += (
-                "\n\nVISUAL STRATEGIC ANALYSIS:\n"
-                "- Analyze professional context from provided visuals (inventory, stock, documents).\n"
-                "- Provide ONE clear, actionable suggestion based on visual data."
-            )
+            v_context = self.vision_agent.analyze("placeholder_image_trigger")
+            prompt += f"\n\n{v_context}"
 
         # Core Logic: Real-time Market Access
         if context and context.get("search_enabled"):
@@ -128,12 +126,12 @@ class MsokoAgent:
         if not self.api_key:
             return "Error: OPENAI_API_KEY not found in environment."
 
-        # RAG Context
-        kb_context = knowledge_store.query(user_message)
+        # Multi-Agent Routing Context Gathering
+        market_context = self.market_agent.analyze(user_message)
         
         system_content = self.generate_system_prompt(context)
-        if kb_context:
-            system_content += f"\n\nMARKET DATA CONTEXT:\n{kb_context}"
+        if market_context:
+            system_content += f"\n\n{market_context}"
 
         messages = [{"role": "system", "content": system_content}]
         if history: messages.extend(history)
@@ -189,12 +187,12 @@ class MsokoAgent:
             yield "Error: OPENAI_API_KEY not found."
             return
 
-        # RAG Context
-        kb_context = knowledge_store.query(user_message)
+        # Multi-Agent Routing Context Gathering
+        market_context = self.market_agent.analyze(user_message)
         
         system_content = self.generate_system_prompt(context)
-        if kb_context:
-            system_content += f"\n\nMARKET DATA CONTEXT:\n{kb_context}"
+        if market_context:
+            system_content += f"\n\n{market_context}"
 
         messages = [{"role": "system", "content": system_content}]
         if history: messages.extend(history)
